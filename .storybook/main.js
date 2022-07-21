@@ -12,16 +12,13 @@ module.exports = {
     config.resolve.alias["@emotion/styled"] = toPath(
       "node_modules/@emotion/styled"
     );
-    config.resolve.alias["@emotion/theming"] = toPath(
+    config.resolve.alias["emotion-theming"] = toPath(
       "node_modules/@emotion/react"
     );
 
     return config;
   },
-  stories: [
-    "../src/**/*.stories.mdx",
-    "../src/**/*.stories.@(js|jsx|ts|tsx)",
-  ],
+  stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
