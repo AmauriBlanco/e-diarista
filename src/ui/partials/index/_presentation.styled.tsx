@@ -1,7 +1,11 @@
 import { Container } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { PropsWithChildren } from "react";
+import Link, { LinkProps } from "ui/components/navigation/Link/Link";
+import RoundedButtom from 'ui/components/inputs/RoundedButton/RoundedButton'
 
 export const SectionContainer = styled("section")`
+  position: relative;
   min-height: 250px;
   background-image: url("/img/home/living-room.svg");
   background-repeat: no-repeat;
@@ -19,29 +23,28 @@ export const SectionContainer = styled("section")`
 `;
 
 export const ContainerStyled = styled(Container)`
-    display: grid;
-    grid-template-rows: repeat(3, auto)
-    grid-template-areas: "title" "subtitle" "button";
-    align-content: center;
+  display: grid;
+  grid-template-rows: repeat(3, auto);
+  grid-template-areas: "title" "subtitulo" "button";
+  align-content: center;
 
-    ${({ theme }) => theme.breakpoints.up("md")} {
-        grid-template-columns: 450px minmax(200px, 450px);
-        grid-template-rows: 125px 55px 60px;
-         grid-template-areas:
-         "title picture"
-         "subtitulo picture"
-         "button picture";
-         gap: ${({ theme }) => theme.spacing(4)};
-         align-items: center;
-         justify-content: space-between;
-         justify-items: center;
-         min-height: 450px;
-    }
+  ${({ theme }) => theme.breakpoints.up("md")} {
+    grid-template-columns: 450px minmax(200px, 450px);
+    grid-template-rows: 125px 55px 60px;
+    grid-template-areas:
+      "title picture"
+      "subtitulo picture"
+      "button picture";
+    gap: ${({ theme }) => theme.spacing(4)};
+    align-items: center;
+    justify-content: space-between;
+    justify-items: center;
+    min-height: 450px;
+  }
 
-    ${({ theme }) => theme.breakpoints.down("md")} {
-        max-width: 350px;
-    }
-
+  ${({ theme }) => theme.breakpoints.down("md")} {
+    max-width: 350px;
+  }
 `;
 
 export const SectionTitle = styled("h1")`
@@ -82,3 +85,79 @@ export const SectionTitle = styled("h1")`
     }
   }
 `;
+
+export const SectionSubtitle = styled("p")`
+  grid-area: subtitulo;
+
+  ${({ theme }) => theme.breakpoints.down("md")} {
+    margin: ${({ theme }) => theme.spacing(0, 0, 5)};
+  }
+
+  ${({ theme }) => theme.breakpoints.up("md")} {
+    width: 350px;
+  }
+`;
+
+export const SectionButtom = styled((props: PropsWithChildren<LinkProps>) => (
+  <Link Component={RoundedButtom} {...props}/>
+))`
+  grid-area: button;
+  width: 405px;
+  height: 100%;
+`;
+
+
+export const SectionPitureContainer = styled("div")`
+  grid-area: picture;
+  position: relative;
+  img {
+    position: relative;
+    top: 35px;
+    width: 100%;
+  }
+
+  ${({ theme }) => theme.breakpoints.down('md')} {
+    display: none;
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    border-radius: 100%;
+  }
+  &::before {
+    top: 20%;
+    right: -5%;
+    width: 130px;
+    height: 130px;
+    background-color: ${({ theme }) => theme.palette.primary.main};
+    z-index: 2;
+  }
+
+  &::after {
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background-color: ${({ theme }) => theme.palette.grey[200]};
+  }
+`;
+
+export const BottomButton = styled("span")`
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  background-color: ${({ theme }) => theme.palette.secondary.main};
+  border-radius: 50px;
+  padding: 11px 12px;
+  color: ${({ theme }) => theme.palette.common.white};
+  border: 5px solid  ${({ theme }) => theme.palette.common.white};
+
+  i {
+    position: relative;
+    left: -2px
+  }
+
+  `;
