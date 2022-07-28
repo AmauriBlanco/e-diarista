@@ -99,11 +99,15 @@ export const SectionSubtitle = styled("p")`
 `;
 
 export const SectionButtom = styled((props: PropsWithChildren<LinkProps>) => (
-  <Link Component={RoundedButtom} {...props}/>
+  <Link Component={RoundedButtom} {...props} />
 ))`
   grid-area: button;
-  width: 405px;
+  width: 100%;
   height: 100%;
+
+  ${({ theme }) => theme.breakpoints.up("md")} {
+    width: 405px;
+  }
 `;
 
 

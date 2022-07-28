@@ -1,0 +1,36 @@
+module.exports = (plop, handlers) => {
+  plop.setGenerator("partial", {
+    description: "Partial",
+    prompts: [
+      {
+        name: "name",
+        type: "input",
+        message: "Nome da Partial: ",
+      },
+      {
+        name: "folder",
+        type: "input",
+        message: "Nome da Pasta: ",
+      },
+    ],
+    actions(data) {
+      const actions = [
+        {
+          type: "add",
+          path: `src/ui/partials//${data.folder.toLowerCase()}/${handlers.createFilename(
+            data.name
+          )}.tsx`,
+          templateFile: "plop/page/partials-template.hbs",
+        },
+        {
+          type: "add",
+          path: `src/ui/styles/pages/${data.folder.toLowerCase()}/${handlers.createFilename(
+            data.name
+          )}.styled.tsx`,
+          templateFile: "plop/page/page-style-template.hbs",
+        },
+      ];
+      return actions;
+    },
+  });
+};
