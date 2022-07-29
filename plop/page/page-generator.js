@@ -1,6 +1,6 @@
 module.exports = (plop, handlers) => {
   plop.setGenerator("page", {
-    description: "Component",
+    description: "Página",
     prompts: [
       {
         name: "name",

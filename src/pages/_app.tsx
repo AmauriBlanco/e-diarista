@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
     <Head>
-      <title>E-Diarista - {pageProps.title && `- ${pageProps.title}`}</title>
+      <title>E-Diarista - {pageProps.title && `${pageProps.title}`}</title>
     </Head>
       <ThemeProvider theme={theme}>
         <AppContainer>

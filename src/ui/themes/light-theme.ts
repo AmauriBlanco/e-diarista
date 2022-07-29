@@ -35,18 +35,50 @@ const theme = createTheme({
   },
   breakpoints: {
     values: {
-        xs: 0,
-        sm: 600,
-        md: 960,
-        lg: 1280,
-        xl: 1536,
+      xs: 0,
+      sm: 600,
+      md: 960,
+      lg: 1280,
+      xl: 1536,
     },
   },
   typography: {
-    fontFamily: 'Poppins, Roboto, sans-serif',
+    fontFamily: "Poppins, Roboto, sans-serif",
   },
   shape: {
     borderRadius: "3px",
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          borderWidth: "2px",
+          ":hover": {
+            borderWidth: "2px",
+          },
+        },
+      },
+      variants: [
+        {
+          props: {
+            variant: "contained",
+            color: "secondary",
+          },
+          style: {
+            color: "white",
+          },
+        },
+      ],
+    },
+
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          boxShadow: '0px 0px 39px rgb(0,0,0,0.05)'
+        }
+      }
+    }
   },
 });
 

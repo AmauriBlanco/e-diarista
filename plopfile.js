@@ -23,7 +23,7 @@ const handlers = {
   },
   createFilename(componentName) {
     return componentName
-      .replace(/([A-Z])/g, "$1")
+      .replace(/([A-Z])/g, " $1")
       .trim()
       .toLowerCase()
       .split(" ")
