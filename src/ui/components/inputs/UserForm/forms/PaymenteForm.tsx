@@ -1,7 +1,7 @@
-import { PaymentData } from './UserForm.styled';
+import { PaymentData } from '../UserForm.styled';
 import { Controller, useFormContext } from 'react-hook-form';
 import { FormValues } from 'data/@Types/forms/FormValue';
-import TextFieldMask from '../TextFieldMask/TextFieldMask';
+import TextFieldMask from '../../TextFieldMask/TextFieldMask';
 import TextField from 'ui/components/inputs/TextField/TextField';
 import { Typography } from '@mui/material';
 import { useEffect } from 'react';

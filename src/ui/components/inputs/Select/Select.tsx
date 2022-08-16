@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { SelectStyled } from './Select.styled';
 import { v4 as uuid } from 'uuid';
-import { useState } from '@storybook/addons';
+import { useState } from 'react';
 
 export interface SelectProps extends MuiSelectProps {
   label?: string;
@@ -18,7 +18,8 @@ const Select: React.FC<PropsWithChildren<SelectProps>> = ({
   style,
   ...props
 }) => {
-  const [elementId, setElementId] = useState('');
+  const [elementId, setElementId] = useState("");
+
   useEffect(() => {
     if (window !== undefined) {
       setElementId(uuid());

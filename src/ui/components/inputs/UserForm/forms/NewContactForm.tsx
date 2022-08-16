@@ -32,7 +32,7 @@ const NewContactForm = () => {
       <TextField
         type={'password'}
         label={'Confirmação da Senha'}
-        style={{ gridArea: 'confirmar-senha' }}
+        style={{ gridArea: 'confirmar_senha' }}
         {...register('usuario.password_confirmation')}
         error={errors?.usuario?.password_confirmation != undefined}
         helperText={errors?.usuario?.password_confirmation?.message}
