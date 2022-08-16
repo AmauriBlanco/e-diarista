@@ -1,14 +1,20 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CadastroClientFormDataInterface, NovaDiariaFormDataInterface } from 'data/@Types/FormInterface';
+import {
+  CadastroClientFormDataInterface,
+  CredenciaisInterface,
+  LoginFormDataInterface,
+  NovaDiariaFormDataInterface,
+  PagamentoFormDataInterface,
+} from 'data/@Types/FormInterface';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormSchemaService } from 'data/services/FormSchemaService';
 import { ServicoInterface } from 'data/@Types/ServicoInterface';
-import { number } from 'yup';
 
 export default function useContratacao() {
-  const [step, setStep] = useState(2),
+  const [step, setStep] = useState(3),
     [hasLogin, setHasLogin] = useState(false),
+    [loginError, setLoginErro] = useState(''),
     breadcrumbItems = ['Detalhes da diária', 'Identificação', 'Pagamento'],
     serviceForm = useForm<NovaDiariaFormDataInterface>({
       resolver: yupResolver(
@@ -19,6 +25,12 @@ export default function useContratacao() {
       resolver: yupResolver(
         FormSchemaService.userData().concat(FormSchemaService.newContact())
       ),
+    }),
+    loginForm = useForm<LoginFormDataInterface<CredenciaisInterface>>({
+      resolver: yupResolver(FormSchemaService.login()),
+    }),
+    paymentForm = useForm<PagamentoFormDataInterface>({
+      resolver: yupResolver(FormSchemaService.payment()),
     }),
     servicos: ServicoInterface[] = [
       {
@@ -45,9 +57,21 @@ export default function useContratacao() {
   function onServiceFormSubmit(data: NovaDiariaFormDataInterface) {
     console.log(data);
   }
-    function onClientFormSubmit(data: CadastroClientFormDataInterface) {
+
+  function onClientFormSubmit(data: CadastroClientFormDataInterface) {
+    console.log(data);
+  }
+
+  function onLoginFormSubmit(
+    data: LoginFormDataInterface<CredenciaisInterface>
+  ) {
+    console.log(data);
+  }
+
+    function onPaymenteFormSubmit(data: PagamentoFormDataInterface) {
       console.log(data);
     }
+
   return {
     step,
     breadcrumbItems,
@@ -59,5 +83,10 @@ export default function useContratacao() {
     clientForm,
     onClientFormSubmit,
     setStep,
+    loginForm,
+    onLoginFormSubmit,
+    loginError,
+    onPaymenteFormSubmit,
+    paymentForm,
   };
 }

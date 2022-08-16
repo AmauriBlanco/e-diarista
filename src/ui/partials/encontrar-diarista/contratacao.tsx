@@ -1,4 +1,4 @@
-import { Button, Paper } from '@mui/material';
+import { Box, Button, Paper, Typography } from '@mui/material';
 import useContratacao from 'data/hooks/pages/useContratacao.page';
 import useIsMobile from 'data/hooks/useIsMobile';
 import React, { PropsWithChildren } from 'react';
@@ -11,8 +11,10 @@ import {
   UserFormContainer,
 } from 'ui/components/inputs/UserForm/UserForm';
 import BreadCrumb from 'ui/components/navigation/BreadCrumb/BreadCrumb';
-import CadastroCliente from './cadastro-cliente';
+import Link from 'ui/components/navigation/Link/Link';
+import CadastroCliente, { LoginCliente } from './cadastro-cliente';
 import DetalheServico from './detalhe-servico';
+import InformacoesPagamento from './informacoes-pagamento';
 
 //import { Component } from './_contratacao.styled';
 
@@ -27,7 +29,12 @@ const Contratacao: React.FC<PropsWithChildren> = () => {
     setHasLogin,
     onClientFormSubmit,
     clientForm,
-    setStep
+    setStep,
+    loginForm,
+    onLoginFormSubmit,
+    loginError,
+    onPaymenteFormSubmit,
+    paymentForm,
   } = useContratacao();
   const isMobile = useIsMobile();
   return (
@@ -56,8 +63,17 @@ const Contratacao: React.FC<PropsWithChildren> = () => {
           }
         />
       )}
+
+      {step === 3 && (
+        <PageTitle
+          title="Informa os dados do cartão para pagamento"
+          subtitle={
+            'Será feita uma reserva, mas o valor só será descontado quando você confirmar a presença do/da diarista'
+          }
+        />
+      )}
       <UserFormContainer>
-        <PageFormContainer>
+        <PageFormContainer fullWidth={step === 4}>
           <Paper>
             {/* Step 1 */}
             <FormProvider {...serviceForm}>
@@ -75,9 +91,64 @@ const Contratacao: React.FC<PropsWithChildren> = () => {
                 onSubmit={clientForm.handleSubmit(onClientFormSubmit)}
                 hidden={step !== 2 || hasLogin}
               >
-                <CadastroCliente onBack={()=> setStep(1)}/>
+                <CadastroCliente onBack={() => setStep(1)} />
               </form>
             </FormProvider>
+
+            {step == 2 && hasLogin && (
+              <FormProvider {...loginForm}>
+                <form onSubmit={loginForm.handleSubmit(onLoginFormSubmit)}>
+                  {loginError && (
+                    <Typography color={'error'} align={'center'} sx={{ mb: 2 }}>
+                      {loginError}
+                    </Typography>
+                  )}
+
+                  <LoginCliente onBack={() => setStep(1)} />
+                </form>
+              </FormProvider>
+            )}
+
+            {/* step 3 */}
+            {step == 3 && (
+              <FormProvider {...paymentForm}>
+                <form onSubmit={paymentForm.handleSubmit(onPaymenteFormSubmit)}>
+                  <InformacoesPagamento />
+                </form>
+              </FormProvider>
+            )}
+
+            {step === 4 && (
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography sx={{ fontSize: '82px' }} color={'secondary'}>
+                  <i className="twf-check-circle" />
+                </Typography>
+                <Typography
+                  sx={{ fontSize: '22px', pb: 3 }}
+                  color={'secondary'}
+                >
+                  Pagamento realizado com sucesso!
+                </Typography>
+                <Typography
+                  sx={{ mb: 3, maxWidth: '410px', mx: 'auto' }}
+                  color={'textSecondary'}
+                >
+                  Sua diária foi paga com sucesso! Já estamos procurando o(a)
+                  melhor profissional para atender sua residência. Caso
+                  nenhum(a) profissional seja encontrado(a), devolvemos seu
+                  dinheiro automaticamente 24 horas antes da data agendada. Você
+                  também pode cancelar a sua diária sem nenhuma multa até 24
+                  horas antes da hora do agendamento.
+                </Typography>
+                <Link
+                  href="/diarias"
+                  Component={Button}
+                  mui={{ color: 'secondary', variant: 'contained' }}
+                >
+                  Ir para minhas diárias
+                </Link>
+              </Box>
+            )}
           </Paper>
           {!isMobile && step !== 4 && (
             <SideInformation

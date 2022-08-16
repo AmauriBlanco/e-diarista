@@ -98,17 +98,27 @@ export const PageFormContainerStyled = styled('div', {
   shouldForwardProp: (prop) => prop !== 'fullWidth',
 })<{ fullWidth?: boolean }>`
   display: grid;
-  grid-template-columns: ${({ theme, fullWidth }) =>
+  grid-template-columns: ${({  fullWidth }) =>
     fullWidth ? '1fr' : 'minmax(652px, 1fr) minmax(150px, 318px)'};
   gap: ${({ theme }) => theme.spacing(6)};
   padding: ${({ theme }) => theme.spacing(0, 0, 5)};
   align-items: start;
   margin-bottom: ${({ theme }) => theme.spacing(8)};
   ${({ theme }) => theme.breakpoints.down('md')} {
-    grid-template-columns: '1fr';
+    grid-template-columns: 1fr;
     gap: ${({ theme }) => theme.spacing(3)};
     .MuiPaper-root {
       padding: 0;
     }
+  }
+`;
+
+export const LoginData = styled(BaseGrid)`
+  ${({ theme }) => theme.breakpoints.down('md')} {
+    text-align: right;
+  }
+  a {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.palette.text.secondary};
   }
 `;
