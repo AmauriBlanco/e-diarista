@@ -1,8 +1,10 @@
 import { FormValues } from 'data/@Types/forms/FormValue';
+import { UserContext } from 'data/contexts/UserContext';
 import useCities from 'data/hooks/useCities';
 import { LocationService } from 'data/services/LocationService';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useContext } from 'react';
 import { useFormContext } from 'react-hook-form';
+
 
 export default function useAddressForm() {
   const {
@@ -12,6 +14,7 @@ export default function useAddressForm() {
       setValue,
       formState: { errors },
     } = useFormContext<FormValues>(),
+    { userAddress } = useContext(UserContext).useState,
     [addressState, addressCity, addressCep] = watch([
       'endereco.estado',
       'endereco.cidade',
@@ -35,7 +38,7 @@ export default function useAddressForm() {
       }
     }
   }, [addressCity]);
-  
+
   useEffect(() => {
     const cep = (addressCep ?? '').replaceAll('_', '');
     if (cep.length === 10) {
@@ -62,5 +65,6 @@ export default function useAddressForm() {
     opcoesCidades,
     control,
     errors,
-  }
+    userAddress,
+  };
 }

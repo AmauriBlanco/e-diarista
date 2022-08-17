@@ -158,7 +158,7 @@ const DetalheServico: React.FC<DetalheServicoProps> = ({
               <div>
                 <TextFieldMask
                   {...inputProps}
-                  inputProps={{ readOnly: true, disable: true }}
+                  inputProps={{ readOnly: true, disable: 'true' }}
                   mask={'99:99'}
                   inputRef={ref}
                   label={'Hora Término'}

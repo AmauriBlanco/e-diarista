@@ -68,9 +68,9 @@ export default function useContratacao() {
     console.log(data);
   }
 
-    function onPaymenteFormSubmit(data: PagamentoFormDataInterface) {
-      console.log(data);
-    }
+  function onPaymenteFormSubmit(data: PagamentoFormDataInterface) {
+    console.log(data);
+  }
 
   return {
     step,
