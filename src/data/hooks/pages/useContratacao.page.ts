@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import {
   CadastroClientFormDataInterface,
@@ -14,6 +14,10 @@ import useApi from '../useApi.hook';
 import { DiariaInterface } from 'data/@Types/DiariaInterface';
 import { ValidationService } from 'data/services/ValidationService';
 import { DateService } from 'data/services/DateService';
+import { houseParts } from 'ui/partials/encontrar-diarista/detalhe-servico';
+import { ExternalServiceContext } from 'data/contexts/ExternalServiceContext';
+import { ApiService, linksResolver } from 'data/services/ApiService';
+import { link } from 'fs';
 
 export default function useContratacao() {
   const [step, setStep] = useState(1),
@@ -49,8 +53,12 @@ export default function useContratacao() {
       }
       return {} as ServicoInterface;
     }, [servicos, dadosFaxina?.servico]),
-    { totalTime } = useMemo<{ totalTime: number }>(() => {
-      return { totalTime: calcularTempoServico(dadosFaxina, tipoLimpeza) };
+    { totalTime, tamanhoCasa, totalPrice } = useMemo(() => {
+      return {
+        totalTime: calcularTempoServico(dadosFaxina, tipoLimpeza),
+        tamanhoCasa: listarComodos(dadosFaxina),
+        totalPrice: calcularPreco(dadosFaxina, tipoLimpeza),
+      };
     }, [
       tipoLimpeza,
       dadosFaxina,
@@ -60,7 +68,32 @@ export default function useContratacao() {
       dadosFaxina?.quantidade_quartos,
       dadosFaxina?.quantidade_quintais,
       dadosFaxina?.quantidade_salas,
-    ]);
+    ]),
+    cepFaxina = serviceForm.watch('endereco.cep'),
+    [podemosAtender, setPodemosAtender] = useState(false),
+    { externalServiceState } = useContext(ExternalServiceContext);
+
+  useEffect(() => {
+    const cep = (cepFaxina ?? '').replace(/\D/g, '');
+    if (ValidationService.cep(cepFaxina ?? '')) {
+      const linkDisponibilidade = linksResolver(
+        externalServiceState.externalService,
+        'verificar_disponibilidade_atendimento'
+      );
+
+      if (linkDisponibilidade) {
+        ApiService.request({
+          url: linkDisponibilidade.uri,
+          method: linkDisponibilidade.type,
+          params: { cep },
+        })
+          .then((response) => setPodemosAtender(true))
+          .catch((_erro) => setPodemosAtender(false));
+      }
+    } else {
+      setPodemosAtender(false);
+    }
+  }, [cepFaxina, externalServiceState.externalService]);
 
   useEffect(() => {
     if (
@@ -129,6 +162,38 @@ export default function useContratacao() {
     return total;
   }
 
+  function calcularPreco(
+    dadosFaxina: DiariaInterface,
+    tipoLimpeza: ServicoInterface
+  ): number {
+    let total = 0;
+    if (dadosFaxina && tipoLimpeza) {
+      total += tipoLimpeza.valor_banheiro * dadosFaxina.quantidade_banheiros;
+      total += tipoLimpeza.valor_cozinha * dadosFaxina.quantidade_cozinhas;
+      total += tipoLimpeza.valor_outros * dadosFaxina.quantidade_outros;
+      total += tipoLimpeza.valor_quarto * dadosFaxina.quantidade_quartos;
+      total += tipoLimpeza.valor_quintal * dadosFaxina.quantidade_quintais;
+      total += tipoLimpeza.valor_sala * dadosFaxina.quantidade_salas;
+    }
+    return Math.max(total, tipoLimpeza.valor_minimo);
+  }
+
+  function listarComodos(dadosFaxina: DiariaInterface): string[] {
+    const comodos: string[] = [];
+    if (dadosFaxina) {
+      houseParts.forEach((housePart) => {
+        const total = dadosFaxina[
+          housePart.name as keyof DiariaInterface
+        ] as number;
+        if (total > 0) {
+          const nome = total > 1 ? housePart.plural : housePart.singular;
+          comodos.push(`${total} ${nome}`);
+        }
+      });
+    }
+    return comodos;
+  }
+
   return {
     step,
     breadcrumbItems,
@@ -145,5 +210,9 @@ export default function useContratacao() {
     loginError,
     onPaymenteFormSubmit,
     paymentForm,
+    tamanhoCasa,
+    tipoLimpeza,
+    totalPrice,
+    podemosAtender,
   };
 }

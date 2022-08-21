@@ -1,10 +1,18 @@
-import axios from "axios";
+import axios from 'axios';
+import { ApiLinksInterface } from 'data/@Types/ApiLinksInterface';
 
 const baseUrl = process.env.NEXT_PUBLIC_API;
 
 export const ApiService = axios.create({
   baseURL: baseUrl,
   headers: {
-    "content-Type": "application/json",
+    'content-Type': 'application/json',
   },
 });
+
+export function linksResolver(
+  links: ApiLinksInterface[] = [],
+  nomeLink: string
+) {
+  return links.find((link) => link.rel === nomeLink);
+}

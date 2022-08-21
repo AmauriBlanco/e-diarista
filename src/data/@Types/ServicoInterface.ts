@@ -1,4 +1,5 @@
 export interface ServicoInterface {
+  valor_minimo(total: number, valor_minimo: any): number;
   id: number;
   nome: string;
   icone: string;

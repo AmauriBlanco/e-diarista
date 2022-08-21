@@ -7,9 +7,12 @@ export interface NovaDiariaFormDataInterface {
   faxina: DiariaInterface;
 }
 
-export interface CadastroClientFormDataInterface {
+export interface CadastroUserInterface {
   usuario: UserInterface;
 }
+
+export interface CadastroClientFormDataInterface
+  extends CadastroUserInterface {}
 
 export interface LoginFormDataInterface<T> {
   login: T;
@@ -24,7 +27,7 @@ export interface PagamentoFormDataInterface {
   pagamento: {
     nome_cartao: string;
     numero_cartao: string;
-    codigo:string;
+    codigo: string;
     validade: string;
   };
   pagamento_recusado?: boolean;
