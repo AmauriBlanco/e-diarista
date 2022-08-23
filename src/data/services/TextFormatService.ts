@@ -20,7 +20,7 @@ export const TextFormatService = {
     return CurrentFormatter.format(price);
   },
   getNumbersFromText(text = ''): string {
-    return text.replace(/D/g, '');
+    return text.replace(/\D/g, '');
   },
   dateToString(date: Date, withTime = false): string {
     const time = date.toISOString();
