@@ -8,8 +8,9 @@ import {
 } from '@mui/material';
 import useContratacao from 'data/hooks/pages/useContratacao.page';
 import useIsMobile from 'data/hooks/useIsMobile';
+import { BrowserService } from 'data/services/BrowserService';
 import { TextFormatService } from 'data/services/TextFormatService';
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useEffect } from 'react';
 import { FormProvider } from 'react-hook-form';
 import DataList from 'ui/components/data-display/DataList/DataList';
 import PageTitle from 'ui/components/data-display/PageTitle/PageTitle';
@@ -51,6 +52,10 @@ const Contratacao: React.FC<PropsWithChildren> = () => {
   } = useContratacao();
   const isMobile = useIsMobile(),
     dataAtendimento = serviceForm.watch('faxina.data_atendimento');
+
+  useEffect(() => {
+    BrowserService.scrollToTop();
+  }, [step]);
 
   if (!servicos || servicos.length < 1) {
     return (
@@ -125,7 +130,11 @@ const Contratacao: React.FC<PropsWithChildren> = () => {
                 onSubmit={serviceForm.handleSubmit(onServiceFormSubmit)}
                 hidden={step !== 1}
               >
-                <DetalheServico servicos={servicos} podemosAtender={podemosAtender} comodos={tamanhoCasa.length} />
+                <DetalheServico
+                  servicos={servicos}
+                  podemosAtender={podemosAtender}
+                  comodos={tamanhoCasa.length}
+                />
               </form>
             </FormProvider>
 

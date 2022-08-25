@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { data } from 'cypress/types/jquery';
 import { ApiLinksInterface } from 'data/@Types/ApiLinksInterface';
 import { LocalStorage } from './StorageService';
 
@@ -66,7 +65,7 @@ export function ApiServiceHeteoas(
 ) {
   const link = linksResolver(links, nome);
   if (link) {
-    onCanRequest(async () => {
+    onCanRequest(async (data) => {
       return await ApiService.request({
         url: link.uri,
         method: link.type,

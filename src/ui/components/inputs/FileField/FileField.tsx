@@ -19,6 +19,7 @@ const FileField: React.FC<PropsWithChildren<FileFieldProps>> = ({
 
     if (files !== null && files.length) {
       setFilePath(files[0]?.name ?? '');
+      onChange(files);
     }
   }
   return (
@@ -30,7 +31,12 @@ const FileField: React.FC<PropsWithChildren<FileFieldProps>> = ({
         {...props}
         fullWidth
       />
-      <TextField type={'file'} fullWidth {...props} onChange={handleFileChange}/>
+      <TextField
+        type={'file'}
+        fullWidth
+        {...props}
+        onChange={handleFileChange}
+      />
     </FileContainer>
   );
 };

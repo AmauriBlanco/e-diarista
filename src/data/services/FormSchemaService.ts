@@ -10,11 +10,11 @@ export const FormSchemaService = {
       .shape({
         usuario: yup.object().shape({
           email: yup.string().email('E-mail inválido'),
-          passowrd: yup.string().min(5, 'Senha muito curta'),
-          passowrd_confirmation: yup
+          password: yup.string().min(5, 'Senha muito curta'),
+          password_confirmation: yup
             .string()
             .min(5, 'Senha muito curta')
-            .oneOf([yup.ref('passowrd'), null], 'As senhas não são iguais'),
+            .oneOf([yup.ref('password'), null], 'As senhas não são iguais'),
         }),
       })
       .defined();
@@ -28,8 +28,8 @@ export const FormSchemaService = {
           nascimento: yup
             .date()
             .transform(DateService.transformDate)
-            .max(DateService.maxAdultBirthday(), 'Digite uma data válida')
-            .min(DateService.minAdultBirthday(), 'Proibido menores de idade')
+            .max(DateService.minAdultBirthday(), 'Digite uma data válida')
+            .min(DateService.maxAdultBirthday(), 'Proibido menores de idade')
             .typeError('Digite uma data válida'),
           cpf: yup.string().test('cpf', 'CPF inválido', ValidationService.cpf),
           telefone: yup
@@ -55,25 +55,36 @@ export const FormSchemaService = {
                 card_expiration_date: '',
               }).card_number
           ),
-          nome_cartao: yup.string(),
-
+          nome_cartao: yup
+            .string()
+            .min(3, 'Minim de três caractere')
+            .test(
+              'card_holder_name',
+              'Nome do cartão possui número',
+              (value) => {
+                if (value) {
+                  return !/[0-9]/.test(value);
+                }
+                return false;
+              }
+            ),
           validade: yup.string().test(
             'card_expiration_date',
-            'Data de validade inválido',
+            'Data de validade inválida',
             (value) =>
               PaymentService.validate({
-                card_number: value as string,
+                card_number: '',
                 card_holder_name: '',
                 card_cvv: '',
                 card_expiration_date: value as string,
               }).card_expiration_date
           ),
-          cvv: yup.string().test(
+          codigo: yup.string().test(
             'card_cvv',
             'Código de validação inválido',
             (value) =>
               PaymentService.validate({
-                card_number: value as string,
+                card_number: '',
                 card_holder_name: '',
                 card_cvv: value as string,
                 card_expiration_date: '',
@@ -158,7 +169,7 @@ export const FormSchemaService = {
               if (value) {
                 const [horaTermino] = value.split(':'),
                   [horaInicio] = data.parent?.hora_inicio?.split(':') ?? [''];
-                  return +horaTermino - +horaInicio <= 8;
+                return +horaTermino - +horaInicio <= 8;
               }
               return false;
             }
@@ -171,7 +182,7 @@ export const FormSchemaService = {
       login: yup.object().shape({
         email: yup.string().email('E-mail inválido'),
         password: yup.string().min(5, 'Senha muito curta'),
-      })
-    })
-  }
+      }),
+    });
+  },
 };

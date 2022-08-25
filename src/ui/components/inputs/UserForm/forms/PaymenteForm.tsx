@@ -62,7 +62,7 @@ export const PaymentForm = () => {
         render={({ field: { ref, ...inputProps } }) => (
           <TextFieldMask
             {...inputProps}
-            mask="99/99"
+            mask="999"
             label={'Código de validação'}
             style={{ gridArea: 'codigo' }}
             error={errors.pagamento?.codigo != undefined}

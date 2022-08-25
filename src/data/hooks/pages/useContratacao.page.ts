@@ -10,17 +10,29 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { FormSchemaService } from 'data/services/FormSchemaService';
 import { ServicoInterface } from 'data/@Types/ServicoInterface';
-import useApi from '../useApi.hook';
 import { DiariaInterface } from 'data/@Types/DiariaInterface';
 import { ValidationService } from 'data/services/ValidationService';
 import { DateService } from 'data/services/DateService';
 import { houseParts } from 'ui/partials/encontrar-diarista/detalhe-servico';
 import { ExternalServiceContext } from 'data/contexts/ExternalServiceContext';
-import { ApiService, linksResolver } from 'data/services/ApiService';
+import {
+  ApiService,
+  ApiServiceHeteoas,
+  linksResolver,
+} from 'data/services/ApiService';
 import { link } from 'fs';
+import useApiHeteoas from '../useApi.hook';
+import { UserContext } from 'data/contexts/UserContext';
+import { UserInterface, UserType } from 'data/@Types/UserInterface';
+import { TextFormatService } from 'data/services/TextFormatService';
+import { LoginService } from 'data/services/LoginService';
+import { UserService } from 'data/services/UserService';
+import { ApiLinksInterface } from 'data/@Types/ApiLinksInterface';
+import { CardInterface } from 'pagarme';
+import { PaymentService } from 'data/services/PaymentService';
 
 export default function useContratacao() {
-  const [step, setStep] = useState(1),
+  const [step, setStep] = useState(3),
     [hasLogin, setHasLogin] = useState(false),
     [loginError, setLoginErro] = useState(''),
     breadcrumbItems = ['Detalhes da diária', 'Identificação', 'Pagamento'],
@@ -40,7 +52,11 @@ export default function useContratacao() {
     paymentForm = useForm<PagamentoFormDataInterface>({
       resolver: yupResolver(FormSchemaService.payment()),
     }),
-    servicos = useApi<ServicoInterface[]>('/api/servicos').data,
+    { externalServiceState } = useContext(ExternalServiceContext),
+    servicos = useApiHeteoas<ServicoInterface[]>(
+      externalServiceState.externalService,
+      'listar_servicos'
+    ).data,
     dadosFaxina = serviceForm.watch('faxina'),
     tipoLimpeza = useMemo<ServicoInterface>(() => {
       if (servicos && dadosFaxina?.servico) {
@@ -59,6 +75,7 @@ export default function useContratacao() {
         tamanhoCasa: listarComodos(dadosFaxina),
         totalPrice: calcularPreco(dadosFaxina, tipoLimpeza),
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       tipoLimpeza,
       dadosFaxina,
@@ -71,25 +88,25 @@ export default function useContratacao() {
     ]),
     cepFaxina = serviceForm.watch('endereco.cep'),
     [podemosAtender, setPodemosAtender] = useState(false),
-    { externalServiceState } = useContext(ExternalServiceContext);
+    { userState, userDispatch } = useContext(UserContext),
+    [novaDiaria, setNovaDiaria] = useState({} as DiariaInterface);
 
   useEffect(() => {
     const cep = (cepFaxina ?? '').replace(/\D/g, '');
     if (ValidationService.cep(cepFaxina ?? '')) {
-      const linkDisponibilidade = linksResolver(
+      ApiServiceHeteoas(
         externalServiceState.externalService,
-        'verificar_disponibilidade_atendimento'
+        'verificar_disponibilidade_atendimento',
+        (request) => {
+          request<{ disponibilidade: boolean }>({ params: { cep } })
+            .then(({ data }) => {
+              setPodemosAtender(data.disponibilidade);
+            })
+            .catch((_err) => {
+              setPodemosAtender(false);
+            });
+        }
       );
-
-      if (linkDisponibilidade) {
-        ApiService.request({
-          url: linkDisponibilidade.uri,
-          method: linkDisponibilidade.type,
-          params: { cep },
-        })
-          .then((response) => setPodemosAtender(true))
-          .catch((_erro) => setPodemosAtender(false));
-      }
     } else {
       setPodemosAtender(false);
     }
@@ -121,6 +138,7 @@ export default function useContratacao() {
     } else {
       serviceForm.setValue('faxina.hora_termino', '');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     totalTime,
     dadosFaxina?.hora_inicio,
@@ -129,21 +147,105 @@ export default function useContratacao() {
   ]);
 
   function onServiceFormSubmit(data: NovaDiariaFormDataInterface) {
-    console.log(data);
+    if (userState.user.nome_completo) {
+      criarDiaria(userState.user);
+    } else {
+      setStep(2);
+    }
   }
 
-  function onClientFormSubmit(data: CadastroClientFormDataInterface) {
+  async function onClientFormSubmit(data: CadastroClientFormDataInterface) {
     console.log(data);
+    const newUserLink = linksResolver(
+      externalServiceState.externalService,
+      'cadastrar_usuario'
+    );
+    if (newUserLink) {
+      try {
+        await cadastrarUsuario(data, newUserLink);
+      } catch (error) {
+        UserService.HandleNewUserError(error, clientForm);
+      }
+    }
   }
 
-  function onLoginFormSubmit(
+  async function cadastrarUsuario(
+    data: CadastroClientFormDataInterface,
+    link: ApiLinksInterface
+  ) {
+    const newUser = await UserService.cadastrar(
+      data.usuario,
+      UserType.Cliente,
+      link
+    );
+    if (newUser) {
+      const loginSuccess = await login(
+        { email: data.usuario.email, password: data.usuario.password ?? '' },
+        newUser
+      );
+      if (loginSuccess) {
+        criarDiaria(newUser);
+      }
+    }
+  }
+
+  async function onLoginFormSubmit(
     data: LoginFormDataInterface<CredenciaisInterface>
   ) {
-    console.log(data);
+    const loginSuccess = await login(data.login);
+    if (loginSuccess) {
+      const user = await LoginService.getUser();
+      if (user) {
+        criarDiaria(user);
+        setStep(3);
+      }
+    }
   }
 
-  function onPaymenteFormSubmit(data: PagamentoFormDataInterface) {
-    console.log(data);
+  async function login(
+    credentials: CredenciaisInterface,
+    user?: UserInterface
+  ): Promise<boolean> {
+    const loginSuccess = await LoginService.login(credentials);
+
+    if (loginSuccess) {
+      if (!user) {
+        user = await LoginService.getUser();
+      }
+      userDispatch({ type: 'SET_USER', payload: user });
+    } else {
+      setLoginErro('E-mail e/ou Senha inválidos');
+    }
+    return loginSuccess;
+  }
+
+  async function onPaymenteFormSubmit(data: PagamentoFormDataInterface) {
+    const cartao = {
+      card_number: data.pagamento.numero_cartao.replaceAll('', ''),
+      card_holder_name: data.pagamento.nome_cartao,
+      card_cvv: data.pagamento.codigo,
+      card_expiration_date: data.pagamento.validade,
+    } as CardInterface;
+
+    const hash = await PaymentService.getHash(cartao);
+    console.log('qualquer inicio');
+    ApiServiceHeteoas(novaDiaria.links, 'pagar_diaria', async (request) => {
+      try {
+        console.log('qualquer meio');
+        await request({
+          data: {
+            card_hash: hash,
+          },
+        });
+        setStep(4);
+      } catch (error) {
+        paymentForm.setError('pagamento_recusado', {
+          type: 'manual',
+          message: 'Pagamento recusado',
+        });
+      }
+    });
+    console.log('qualquer fim');
   }
 
   function calcularTempoServico(
@@ -192,6 +294,31 @@ export default function useContratacao() {
       });
     }
     return comodos;
+  }
+
+  async function criarDiaria(user: UserInterface) {
+    if (user.nome_completo) {
+      const { endereco, faxina } = serviceForm.getValues();
+      ApiServiceHeteoas(user.links, 'cadastrar_diaria', async (request) => {
+        const { data: novaDiaria } = await request<DiariaInterface>({
+          data: {
+            ...faxina,
+            ...endereco,
+            cep: TextFormatService.getNumbersFromText(endereco.cep),
+            preco: totalPrice,
+            tempo_atendimento: totalTime,
+            data_atendimento:
+              TextFormatService.reverseDate(faxina.data_atendimento as string) +
+              'T' +
+              faxina.hora_inicio,
+          },
+        });
+        if (novaDiaria) {
+          setStep(3);
+          setNovaDiaria(novaDiaria);
+        }
+      });
+    }
   }
 
   return {

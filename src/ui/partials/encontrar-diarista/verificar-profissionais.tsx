@@ -1,18 +1,24 @@
-import { Button, Container, Typography, CircularProgress } from "@mui/material";
-import useVerificarProfissionais from "data/hooks/pages/useVerificarProfissionais.page";
-import React, { PropsWithChildren } from "react";
-import PageTitle from "ui/components/data-display/PageTitle/PageTitle";
-import UserInformation from "ui/components/data-display/UserInformation/UserInformation";
-import SafeEnvironment from "ui/components/feedback/SafeEnvironment/SafeEnvironment";
-import TextFieldMask from "ui/components/inputs/TextFieldMask/TextFieldMask";
+import { Button, Container, Typography, CircularProgress } from '@mui/material';
+import useVerificarProfissionais from 'data/hooks/pages/useVerificarProfissionais.page';
+import React, { PropsWithChildren } from 'react';
+import PageTitle from 'ui/components/data-display/PageTitle/PageTitle';
+import UserInformation from 'ui/components/data-display/UserInformation/UserInformation';
+import SafeEnvironment from 'ui/components/feedback/SafeEnvironment/SafeEnvironment';
+import TextFieldMask from 'ui/components/inputs/TextFieldMask/TextFieldMask';
 
 import {
   FormElementContainer,
   ProfissionaisContainer,
   ProfissionaisPaper,
-} from "./verificar-profissionais.styled";
+} from './verificar-profissionais.styled';
 
-const VerificarProfissionais: React.FC<PropsWithChildren> = () => {
+interface VerificarProfissionaisProps {
+  onContratacaoProfissional: () => void;
+}
+
+const VerificarProfissionais: React.FC<VerificarProfissionaisProps> = ({
+  onContratacaoProfissional,
+}) => {
   const {
     cep,
     setCep,
@@ -44,11 +50,11 @@ const VerificarProfissionais: React.FC<PropsWithChildren> = () => {
           <Button
             variant="contained"
             color="secondary"
-            sx={{ width: "220px" }}
+            sx={{ width: '220px' }}
             disabled={!cepValido || carregando}
             onClick={() => buscarProfissionais(cep)}
           >
-            {carregando ? <CircularProgress size={20} /> : "Buscar"}
+            {carregando ? <CircularProgress size={20} /> : 'Buscar'}
           </Button>
         </FormElementContainer>
         {buscaFeita &&
@@ -60,14 +66,14 @@ const VerificarProfissionais: React.FC<PropsWithChildren> = () => {
                     <UserInformation
                       key={index}
                       name={diarista.nome_completo}
-                      picture={diarista.foto_usuario ?? ""}
+                      picture={diarista.foto_usuario ?? ''}
                       rating={diarista.reputacao ?? 0}
                       description={diarista.cidade}
                     />
                   );
                 })}
               </ProfissionaisContainer>
-              <Container sx={{ textAlign: "center" }}>
+              <Container sx={{ textAlign: 'center' }}>
                 {diaristasRestantes > 0 && (
                   <Typography
                     variant="body2"
@@ -76,12 +82,17 @@ const VerificarProfissionais: React.FC<PropsWithChildren> = () => {
                   >
                     ...mais {diaristasRestantes}
                     {diaristasRestantes > 1
-                      ? " profissionais atendem "
-                      : " profissional atende "}
+                      ? ' profissionais atendem '
+                      : ' profissional atende '}
                   </Typography>
                 )}
 
-                <Button variant="contained" color="secondary" sx={{ mt: 5 }}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  sx={{ mt: 5 }}
+                  onClick={onContratacaoProfissional}
+                >
                   Contratar um(a) profissional
                 </Button>
               </Container>
