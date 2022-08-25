@@ -64,6 +64,7 @@ export function ApiServiceHeteoas(
   onCantRequest?: Function
 ) {
   const link = linksResolver(links, nome);
+
   if (link) {
     onCanRequest(async (data) => {
       return await ApiService.request({
@@ -76,5 +77,4 @@ export function ApiServiceHeteoas(
     onCantRequest?.();
   }
 }
-
 

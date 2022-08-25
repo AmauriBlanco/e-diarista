@@ -32,7 +32,7 @@ import { CardInterface } from 'pagarme';
 import { PaymentService } from 'data/services/PaymentService';
 
 export default function useContratacao() {
-  const [step, setStep] = useState(3),
+  const [step, setStep] = useState(1),
     [hasLogin, setHasLogin] = useState(false),
     [loginError, setLoginErro] = useState(''),
     breadcrumbItems = ['Detalhes da diária', 'Identificação', 'Pagamento'],
@@ -229,22 +229,21 @@ export default function useContratacao() {
 
     const hash = await PaymentService.getHash(cartao);
     console.log('qualquer inicio');
-    ApiServiceHeteoas(novaDiaria.links, 'pagar_diaria', async (request) => {
-      try {
-        console.log('qualquer meio');
-        await request({
-          data: {
-            card_hash: hash,
-          },
-        });
-        setStep(4);
-      } catch (error) {
-        paymentForm.setError('pagamento_recusado', {
-          type: 'manual',
-          message: 'Pagamento recusado',
-        });
-      }
-    });
+   ApiServiceHeteoas(novaDiaria.links, 'pagar_diaria', async (request) => {
+     try {
+       await request({
+         data: {
+           card_hash: hash,
+         },
+       });
+       setStep(4);
+     } catch (error) {
+       paymentForm.setError('pagamento_recusado', {
+         type: 'manual',
+         message: 'Pagamento recusado',
+       });
+     }
+   });
     console.log('qualquer fim');
   }
 

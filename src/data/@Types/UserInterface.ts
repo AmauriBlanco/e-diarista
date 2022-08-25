@@ -1,6 +1,8 @@
 import { ApiLinksInterface } from './ApiLinksInterface';
 
 export interface UserInterface {
+  errors: any;
+  error: any;
   id?: number;
   password_confirmation?: string;
   new_password: string;

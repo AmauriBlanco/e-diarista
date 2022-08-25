@@ -42,13 +42,13 @@ export const UserService = {
     if (axios.isAxiosError(error)) {
       const errorList = error.response?.data as UserInterface | undefined;
       if (errorList) {
-        if (errorList.cpf) {
+        if (errorList.errors.cpf) {
           form.setError('usuario.cpf', {
             type: 'cadastrado',
             message: 'CPF ja cadastrado',
           });
         }
-        if (errorList.email) {
+        if (errorList.errors.email) {
           form.setError('usuario.email', {
             type: 'cadastrado',
             message: 'E-mail já cadastrado',
