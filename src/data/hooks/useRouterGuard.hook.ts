@@ -12,11 +12,11 @@ export const privateRoutes = [
 export const annonymousRoutes = [
   '/cadastro/diarista',
   '/login',
-  'recuperar-senha',
+  '/recuperar-senha',
   '/',
 ];
 
-export const houseCleanerOnlyRoutes = ['/pagamentos', 'oportunidades'];
+export const houseCleanerOnlyRoutes = ['/pagamentos', '/oportunidades'];
 
 export default function useRouterGuard(
   user: UserInterface,
