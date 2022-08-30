@@ -1,14 +1,19 @@
 import { Button } from '@mui/material';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import Table, { TableCell, TableProps, TableRow } from './Table';
+import Table, { TableCell, TablePagination, TableProps, TableRow } from './Table';
 
 export default {
   title: 'data-display/Table',
   component: Table,
 } as ComponentMeta<typeof Table>;
 
-const Template: ComponentStory<typeof Table> = (args) => <Table {...args} />;
+const Template: ComponentStory<typeof Table> = (args) => ( 
+  <>
+    <Table {...args}/>
+    <TablePagination count={10}/>
+  </>
+);
 
 export const Default = Template.bind({});
 

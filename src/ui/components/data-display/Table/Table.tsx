@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useMemo } from 'react';
 //import {} from '@mui/material';
 import {
   TableStyled,
@@ -15,13 +15,31 @@ export interface TableProps<T> {
   header: string[];
   data: T[];
   rowElement: (item: T, index: number) => React.ReactNode;
+  itemsPerPage?: number;
+  currentPage?: number;
 }
 
 export type TableComponentType = <T>(
   props: TableProps<T>
 ) => React.ReactElement;
 
-const Table: TableComponentType = ({ header, rowElement, data }) => {
+const Table: TableComponentType = ({
+  header,
+  rowElement,
+  data,
+  currentPage,
+  itemsPerPage,
+}) => {
+  const tableData = useMemo<typeof data>(() => {
+    if (itemsPerPage != undefined && currentPage !== undefined) {
+      return data.slice(
+        (currentPage - 1) * itemsPerPage,
+        (currentPage - 1) * itemsPerPage + itemsPerPage
+      );
+    }
+    return data;
+  }, [data, itemsPerPage, currentPage]);
+
   return (
     <TablePaper>
       <TableContainerStyled>
@@ -37,7 +55,7 @@ const Table: TableComponentType = ({ header, rowElement, data }) => {
 
           {/* Body da tablea */}
           <TableBodyStyled>
-            {data.map((item, index) => {
+            {tableData.map((item, index) => {
               return rowElement(item, index);
             })}
           </TableBodyStyled>

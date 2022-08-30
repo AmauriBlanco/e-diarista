@@ -48,4 +48,9 @@ export const TableContainerStyled = styled(TableContainer)``;
 
 
 export const TableRowStyled = styled(TableRow)``;
-export const TablePaginationStyled = styled(Pagination)``;
+
+export const TablePaginationStyled = styled(Pagination)`
+  display: flex;
+  justify-content: flex-end;
+  margin: ${({ theme }) => theme.spacing(4)};
+`;
