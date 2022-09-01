@@ -122,3 +122,8 @@ export const LoginData = styled(BaseGrid)`
     color: ${({ theme }) => theme.palette.text.secondary};
   }
 `;
+
+
+export const FinancialData = styled(BaseGrid)`
+  grid-template-columns: 1fr;
+`;

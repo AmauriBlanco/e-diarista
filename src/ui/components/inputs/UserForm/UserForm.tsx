@@ -19,3 +19,4 @@ export * from './forms/NewContactForm';
 export * from './forms/PaymenteForm';
 export * from './forms/PictureForm';
 export * from './forms/UserDataForm';
+export * from './forms/FinancialForm'
