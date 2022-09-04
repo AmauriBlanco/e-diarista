@@ -98,7 +98,7 @@ export const PageFormContainerStyled = styled('div', {
   shouldForwardProp: (prop) => prop !== 'fullWidth',
 })<{ fullWidth?: boolean }>`
   display: grid;
-  grid-template-columns: ${({  fullWidth }) =>
+  grid-template-columns: ${({ fullWidth }) =>
     fullWidth ? '1fr' : 'minmax(652px, 1fr) minmax(150px, 318px)'};
   gap: ${({ theme }) => theme.spacing(6)};
   padding: ${({ theme }) => theme.spacing(0, 0, 5)};
@@ -123,7 +123,11 @@ export const LoginData = styled(BaseGrid)`
   }
 `;
 
-
 export const FinancialData = styled(BaseGrid)`
   grid-template-columns: 1fr;
+`;
+
+export const CitiesSelection = styled(BaseGrid)`
+  grid-template-columns: 1fr;
+  grid-template-areas: 'busca-cidade';
 `;

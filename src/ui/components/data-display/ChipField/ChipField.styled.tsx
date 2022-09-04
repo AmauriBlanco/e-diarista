@@ -34,7 +34,7 @@ export const ChipsStyled = styled(Chip)`
     white-space: pre-wrap;
   }
 
-  .MuiChip-DeleteIcon {
+  .MuiChip-deleteIcon {
     font-size: ${({ theme }) => theme.spacing(2)};
     margin-left: ${({ theme }) => theme.spacing(3)};
   }

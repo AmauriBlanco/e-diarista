@@ -1,3 +1,5 @@
+import { CidadeInterface } from "../EnderecoInterface";
+
 export type FormValues = {
   usuario: {
     email: string;
@@ -39,5 +41,6 @@ export type FormValues = {
   login: {
     email: string,
     password: string,
-  }
+  };
+  enderecosAtendidos: CidadeInterface[];
 };
