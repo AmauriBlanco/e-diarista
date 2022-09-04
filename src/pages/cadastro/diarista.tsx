@@ -33,8 +33,19 @@ export const getStaticProps: GetStaticProps = async () => {
 };
 
 const Diarista: React.FC = () => {
-  const { step, setStep, breadcrumbItems, userForm, addressListForm } =
-      useCadastroDiarista(),
+  const {
+      step,
+      setStep,
+      load,
+      breadcrumbItems,
+      userForm,
+      addressListForm,
+      onUserSubmit,
+      onAddressSubmit,
+      enderecosAtendidos,
+      newAddress,
+      sucessoCadastro
+    } = useCadastroDiarista(),
     isMobile = useIsMobile();
 
   useEffect(() => {
@@ -73,7 +84,11 @@ const Diarista: React.FC = () => {
         <PageFormContainer>
           {step === 1 && (
             <FormProvider {...userForm}>
-              <Paper sx={{ p: 4 }} component={'form'} onSubmit={() => {}}>
+              <Paper
+                sx={{ p: 4 }}
+                component={'form'}
+                onSubmit={userForm.handleSubmit(onUserSubmit)}
+              >
                 <Typography sx={{ fontWeight: 'bold', pb: 2 }}>
                   Dados Pessoais
                 </Typography>
@@ -110,6 +125,7 @@ const Diarista: React.FC = () => {
                     variant="contained"
                     color={'secondary'}
                     type={'submit'}
+                    disabled={load}
                   >
                     Cadastrar e escolher cidades
                   </Button>
@@ -120,13 +136,22 @@ const Diarista: React.FC = () => {
 
           {step === 2 && (
             <FormProvider {...addressListForm}>
-              <Paper component={'form'} sx={{ p: 4 }}>
+              <Paper
+                component={'form'}
+                sx={{ p: 4 }}
+                onSubmit={addressListForm.handleSubmit(onAddressSubmit)}
+              >
                 <Typography sx={{ fontWeight: 'bold', pb: 2 }}>
                   Seleciona a cidade
                 </Typography>
-                <CitiesForm estado={'SP'} />
+                {newAddress && <CitiesForm estado={newAddress?.estado} />}
                 <Container sx={{ textAlign: 'center' }}>
-                  <Button variant="contained" color="secondary" type={'submit'}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    type={'submit'}
+                    disabled={load || enderecosAtendidos?.length === 0}
+                  >
                     Finalizar cadastro
                   </Button>
                 </Container>
@@ -162,7 +187,7 @@ const Diarista: React.FC = () => {
         </PageFormContainer>
       </UserFormContainer>
       <Dialog
-        isOpen={false}
+        isOpen={sucessoCadastro}
         onClose={() => {}}
         noCancel
         title="Cadastro realizado com sucesso"
