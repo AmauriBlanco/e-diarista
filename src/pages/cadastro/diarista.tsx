@@ -20,6 +20,7 @@ import { FormProvider } from 'react-hook-form';
 import { Button, Container, Divider, Paper, Typography } from '@mui/material';
 import NewContactForm from 'ui/components/inputs/UserForm/forms/NewContactForm';
 import { CitiesForm } from 'ui/components/inputs/UserForm/forms/CitiesForms';
+import Dialog from 'ui/components/feedback/Dialog/Dialog';
 
 //import { Component } from '@styles/pages/cadastro/diarista.styled';
 
@@ -160,6 +161,16 @@ const Diarista: React.FC = () => {
           )}
         </PageFormContainer>
       </UserFormContainer>
+      <Dialog
+        isOpen={false}
+        onClose={() => {}}
+        noCancel
+        title="Cadastro realizado com sucesso"
+        confirmLabel="Ver oportunidades"
+        onConfirm={() => window.location.reload()}
+      >
+        Agora você pode visualizar as oportunidades disponíceis na sua região
+      </Dialog>
     </div>
   );
 };
