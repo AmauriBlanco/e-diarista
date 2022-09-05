@@ -1,9 +1,11 @@
+
 import { Oportunidade } from 'data/@Types/oportunidadesInterface';
 import { UserContext } from 'data/contexts/UserContext';
 import { linksResolver } from 'data/services/ApiService';
 import { useContext } from 'react';
 import useApiHeteoas from '../useApi.hook';
 import useIsMobile from '../useIsMobile';
+import usePagination from '../usePagination.hook';
 
 export default function useOportunidades() {
   const {
@@ -13,7 +15,8 @@ export default function useOportunidades() {
       user.links,
       'lista_oportunidades'
     ).data,
-    isMobile = useIsMobile();
+    isMobile = useIsMobile(),
+    {currentPage, setCurrentPage, totalPage, itemsPerPage} = usePagination(oportunidades ?? [], 5)
 
   function totalComodos(oportunidade: Oportunidade): number {
     let total = 0;
@@ -31,5 +34,14 @@ export default function useOportunidades() {
     return linksResolver(oportunidade.links, 'candidatar_diarista') != undefined;
   }
 
-  return { oportunidades, isMobile, totalComodos, podeCandidatar };
+  return {
+    oportunidades,
+    isMobile,
+    totalComodos,
+    podeCandidatar,
+    currentPage,
+    setCurrentPage,
+    totalPage,
+    itemsPerPage,
+  };
 }
