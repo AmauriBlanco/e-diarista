@@ -14,11 +14,10 @@ export interface CadastroUserInterface {
 export interface CadastroClientFormDataInterface
   extends CadastroUserInterface {}
 
-export interface CadastroDiaristaFormDataInterface
-  extends CadastroUserInterface {
-    endereco?: EnderecoInterface,
-    enderecoAtendido?: CidadeInterface[];
-  }
+export interface CadastroDiaristaFormDataInterface extends CadastroUserInterface {
+  endereco?: EnderecoInterface;
+  enderecosAtendidos?: CidadeInterface[];
+}
 
 export interface LoginFormDataInterface<T> {
   login: T;

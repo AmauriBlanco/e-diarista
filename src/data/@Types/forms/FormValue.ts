@@ -39,8 +39,8 @@ export type FormValues = {
   };
 
   login: {
-    email: string,
-    password: string,
+    email: string;
+    password: string;
   };
   enderecosAtendidos: CidadeInterface[];
 };
