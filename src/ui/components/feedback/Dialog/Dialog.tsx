@@ -59,7 +59,7 @@ const Dialog: React.FC<PropsWithChildren<DialogProps>> = (props) => {
             size={'large'}
             variant={'contained'}
             color={'secondary'}
-            onClick={props.onCancel || props.onClose}
+            onClick={props.onConfirm || props.onClose}
           >
             {props.confirmLabel ?? 'Confirmar'}
           </Button>
