@@ -26,7 +26,7 @@ export const DialogTitle = styled(MuiDialogTitle)`
 
 export const DialogContent = styled(MuiDialogContent)`
   &.MuiDialogContent-root {
-    padding: ${({ theme }) => theme.spacing(1.5)};
+    padding: ${({ theme }) => theme.spacing(3)};
     ${({ theme }) => theme.breakpoints.down('md')} {
       padding: ${({ theme }) => theme.spacing(3, 6, 0)};
     }
