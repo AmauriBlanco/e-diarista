@@ -34,6 +34,8 @@ const Oportunidades: React.FC = () => {
     setCurrentPage,
     totalPage,
     itemsPerPage,
+    oportunidadeSelecionada,
+    setOportunidadeSelecionada,
   } = useOportunidades();
   return (
     <Container sx={{ mb: 5, p: 0 }}>
@@ -70,7 +72,7 @@ const Oportunidades: React.FC = () => {
                       <Button
                         variant={'contained'}
                         color={'secondary'}
-                        onClick={() => {}}
+                        onClick={() => setOportunidadeSelecionada(oportunidade)}
                       >
                         Se candidatar
                       </Button>
