@@ -1,6 +1,12 @@
 import React from 'react';
 import { GetStaticProps } from 'next';
-import { Button, Container, Divider, Typography } from '@mui/material';
+import {
+  Button,
+  Container,
+  Divider,
+  Snackbar,
+  Typography,
+} from '@mui/material';
 import PageTitle from 'ui/components/data-display/PageTitle/PageTitle';
 import useOportunidades from 'data/hooks/pages/useOportunidades.page';
 import DataList from 'ui/components/data-display/DataList/DataList';
@@ -36,6 +42,9 @@ const Oportunidades: React.FC = () => {
     itemsPerPage,
     oportunidadeSelecionada,
     setOportunidadeSelecionada,
+    setMensagemSnackbar,
+    mensagemSnackbar,
+    seCandidatar,
   } = useOportunidades();
   return (
     <Container sx={{ mb: 5, p: 0 }}>
@@ -96,26 +105,30 @@ const Oportunidades: React.FC = () => {
               data={oportunidades}
               itemsPerPage={itemsPerPage}
               currentPage={currentPage}
-              rowElement={(item, index) => (
+              rowElement={(oportunidade, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <strong>
                       {TextFormatService.reverseDate(
-                        item.data_atendimento as string
+                        oportunidade.data_atendimento as string
                       )}
                     </strong>
                   </TableCell>
-                  <TableCell>{item.nome_servico}</TableCell>
-                  <TableCell>{totalComodos(item)} cômodos</TableCell>
+                  <TableCell>{oportunidade.nome_servico}</TableCell>
+                  <TableCell>{totalComodos(oportunidade)} cômodos</TableCell>
                   <TableCell>
-                    {item.cidade} - {item.estado}
+                    {oportunidade.cidade} - {oportunidade.estado}
                   </TableCell>
                   <TableCell>
-                    {TextFormatService.currency(item.preco)}
+                    {TextFormatService.currency(oportunidade.preco)}
                   </TableCell>
                   <TableCell>
-                    {podeCandidatar(item) && (
-                      <Button onClick={() => {}}>Se candidatar</Button>
+                    {podeCandidatar(oportunidade) && (
+                      <Button
+                        onClick={() => setOportunidadeSelecionada(oportunidade)}
+                      >
+                        Se candidatar
+                      </Button>
                     )}
                   </TableCell>
                 </TableRow>
@@ -132,35 +145,64 @@ const Oportunidades: React.FC = () => {
         <Typography align="center">Nenhuma oportunidade ainda</Typography>
       )}
       <Dialog
-        isOpen={false}
-        onClose={() => {}}
+        isOpen={oportunidadeSelecionada != undefined}
+        onClose={() => setOportunidadeSelecionada(undefined)}
         title={'Se candidatar à diária'}
+        onConfirm={() => seCandidatar(oportunidadeSelecionada!)}
         subtitle={'Tem certeza que deseja se candidatar a diária abaixo?'}
       >
         <div>
           <JobInformation>
             <>
               <div>
-                Data:<strong>01/01/2022</strong>
+                Data:
+                <strong>
+                  {TextFormatService.dateTime(
+                    oportunidadeSelecionada?.data_atendimento as string
+                  )}
+                </strong>
               </div>
-              <div>Enderço:</div>
               <div>
-                Valor: <strong>R$ 140,00</strong>
+                Enderço: {TextFormatService.getAddress(oportunidadeSelecionada)}
+              </div>
+              <div>
+                Valor:{' '}
+                <strong>
+                  {TextFormatService.currency(oportunidadeSelecionada?.preco)}
+                </strong>
               </div>
             </>
           </JobInformation>
         </div>
-        <UserInformation name="Amauri" rating={3} picture={''} />
-        <Divider />
-        <Typography sx={{ p: 3, fontWeight: 'medium', bgcolor: 'grey.50' }}>
-          Últimas avaliações do cliente
-        </Typography>
         <UserInformation
-          name="Amauri"
-          rating={3}
-          picture={''}
-          isRating={true}
+          name={oportunidadeSelecionada?.cliente.nome_completo ?? ''}
+          rating={oportunidadeSelecionada?.cliente.reputacao ?? 0}
+          picture={oportunidadeSelecionada?.cliente.foto_usuario ?? ''}
         />
+        <Divider />
+
+        {oportunidadeSelecionada &&
+          oportunidadeSelecionada!.avaliacoes_cliente.length > 0 && (
+            <>
+              <Typography
+                sx={{ p: 3, fontWeight: 'medium', bgcolor: 'grey.50' }}
+              >
+                Últimas avaliações do cliente
+              </Typography>
+              {oportunidadeSelecionada!.avaliacoes_cliente.map(
+                (item, index) => {
+                  <UserInformation
+                    key={index}
+                    name={item.nome_avaliador}
+                    rating={item.nota}
+                    picture={item.foto_avaliador}
+                    isRating={true}
+                  />;
+                }
+              )}
+            </>
+          )}
+
         <Typography
           sx={{ py: 2 }}
           variant={'subtitle2'}
@@ -172,6 +214,12 @@ const Oportunidades: React.FC = () => {
           um email avisando. Atente-se à sua caixa de entrada!
         </Typography>
       </Dialog>
+      <Snackbar
+        open={mensagemSnackbar.length > 0}
+        message={mensagemSnackbar}
+        autoHideDuration={4000}
+        onClose={() => setMensagemSnackbar('')}
+      />
     </Container>
   );
 };

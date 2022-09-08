@@ -1,10 +1,11 @@
 import { Oportunidade } from 'data/@Types/oportunidadesInterface';
 import { UserContext } from 'data/contexts/UserContext';
-import { linksResolver } from 'data/services/ApiService';
+import { ApiServiceHeteoas, linksResolver } from 'data/services/ApiService';
 import { useContext, useState } from 'react';
 import useApiHeteoas from '../useApi.hook';
 import useIsMobile from '../useIsMobile';
 import usePagination from '../usePagination.hook';
+import { mutate } from 'swr';
 
 export default function useOportunidades() {
   const {
@@ -19,7 +20,9 @@ export default function useOportunidades() {
       oportunidades ?? [],
       5
     ),
-    [oportunidadeSelecionada, setOportunidadeSelecionada] = useState<Oportunidade>();
+    [oportunidadeSelecionada, setOportunidadeSelecionada] =
+      useState<Oportunidade>(),
+    [mensagemSnackbar, setMensagemSnackbar] = useState('');
 
   function totalComodos(oportunidade: Oportunidade): number {
     let total = 0;
@@ -39,6 +42,25 @@ export default function useOportunidades() {
     );
   }
 
+  function seCandidatar(oportunidade: Oportunidade) {
+    ApiServiceHeteoas(
+      oportunidade.links,
+      'candidatar_diarista',
+      async (request) => {
+        try {
+          await request();
+          setMensagemSnackbar('Candidatura enviada!');
+          setOportunidadeSelecionada(undefined);
+          atualizarOportunidades();
+        } catch (error) {}
+      }
+    );
+  }
+
+  function atualizarOportunidades() {
+    mutate('lista_oportunidades');
+  }
+
   return {
     oportunidades,
     isMobile,
@@ -50,5 +72,8 @@ export default function useOportunidades() {
     itemsPerPage,
     oportunidadeSelecionada,
     setOportunidadeSelecionada,
+    mensagemSnackbar,
+    setMensagemSnackbar,
+    seCandidatar,
   };
 }
