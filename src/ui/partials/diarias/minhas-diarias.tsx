@@ -1,6 +1,9 @@
 import { Button, Container, Typography } from '@mui/material';
 import useMinhasDiarias from 'data/hooks/pages/diarias/useMinhasDiarias.page';
-import { ConfirmDialog } from 'data/hooks/pages/diarias/_minhas-diarias-dialogs';
+import {
+  ConfirmDialog,
+  RatingDialog,
+} from 'data/hooks/pages/diarias/_minhas-diarias-dialogs';
 import { DiariaService } from 'data/services/DiariaService';
 import { TextFormatService } from 'data/services/TextFormatService';
 import React, { PropsWithChildren } from 'react';
@@ -31,6 +34,9 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
     diariaConfirmar,
     setDiariaConfirmar,
     confirmarDiaria,
+    diariaAvaliar,
+    setDiariaAvaliar,
+    avaliarDiaria,
   } = useMinhasDiarias();
   return (
     <Container sx={{ mb: 5, p: 0 }}>
@@ -87,7 +93,11 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
                         </Button>
                       )}
                       {podeAvaliar(diaria) && (
-                        <Button color={'success'} variant={'contained'}>
+                        <Button
+                          color={'success'}
+                          variant={'contained'}
+                          onClick={() => setDiariaAvaliar(diaria)}
+                        >
                           Avaliar
                         </Button>
                       )}
@@ -136,14 +146,19 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
                     )}
                     {podeConfirmar(item) && (
                       <Button
-                        color={'success'}                       
+                        color={'success'}
                         onClick={() => setDiariaConfirmar(item)}
                       >
                         Confirmar Presença
                       </Button>
                     )}
                     {podeAvaliar(item) && (
-                      <Button color={'success'}>Avaliar</Button>
+                      <Button
+                        color={'success'}
+                        onClick={() => setDiariaAvaliar(item)}
+                      >
+                        Avaliar
+                      </Button>
                     )}
                   </TableCell>
                 </TableRow>
@@ -161,10 +176,18 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
       )}
 
       {diariaConfirmar && (
-        <ConfirmDialog 
+        <ConfirmDialog
           diaria={diariaConfirmar}
           onConfirm={confirmarDiaria}
-          onCancel={()=> setDiariaConfirmar(undefined)}
+          onCancel={() => setDiariaConfirmar(undefined)}
+        />
+      )}
+
+      {diariaAvaliar && (
+        <RatingDialog
+          diaria={diariaAvaliar}
+          onConfirm={avaliarDiaria}
+          onCancel={() => setDiariaAvaliar(undefined)}
         />
       )}
     </Container>

@@ -16,7 +16,8 @@ export default function useMinhasDiarias() {
       diarias,
       5
     ),
-    [diariaConfirmar, setDiariaConfirmar] = useState<DiariaInterface>()
+    [diariaConfirmar, setDiariaConfirmar] = useState<DiariaInterface>(),
+    [diariaAvaliar, setDiariaAvaliar] = useState<DiariaInterface>();
 
   function podeVisualizar(diaria: DiariaInterface): boolean {
     return linksResolver(diaria.links, 'self') != undefined;
@@ -40,14 +41,27 @@ export default function useMinhasDiarias() {
         await request();
         setDiariaConfirmar(undefined);
         atualizarDiarias();
-      } catch (error) {
-        
-      }
-    })
+      } catch (error) {}
+    });
+  }
+
+  async function avaliarDiaria(
+    diaria: DiariaInterface,
+    avaliacao: { descricao: string; nota: number }
+  ) {
+    ApiServiceHeteoas(diaria.links, 'avaliar_diaria', async (request) => {
+      try {
+        await request({
+          data: avaliacao,
+        });
+        setDiariaAvaliar(undefined);
+        atualizarDiarias();
+      } catch (error) {}
+    });
   }
 
   function atualizarDiarias() {
-    mutate('listar_diarias')
+    mutate('listar_diarias');
   }
 
   return {
@@ -64,5 +78,8 @@ export default function useMinhasDiarias() {
     diariaConfirmar,
     setDiariaConfirmar,
     confirmarDiaria,
+    diariaAvaliar,
+    setDiariaAvaliar,
+    avaliarDiaria,
   };
 }
