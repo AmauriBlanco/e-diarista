@@ -1,6 +1,7 @@
 import { Button, Container, Typography } from '@mui/material';
 import useMinhasDiarias from 'data/hooks/pages/diarias/useMinhasDiarias.page';
 import {
+  CancelDialog,
   ConfirmDialog,
   RatingDialog,
 } from 'data/hooks/pages/diarias/_minhas-diarias-dialogs';
@@ -37,6 +38,8 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
     diariaAvaliar,
     setDiariaAvaliar,
     avaliarDiaria,
+    diariaCancelar,
+    setDiariaCancelar,
   } = useMinhasDiarias();
   return (
     <Container sx={{ mb: 5, p: 0 }}>
@@ -79,7 +82,11 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
                         </Button>
                       )}
                       {podeCancelar(diaria) && (
-                        <Button color={'error'} variant={'contained'}>
+                        <Button
+                          color={'error'}
+                          variant={'contained'}
+                          onClick={() => setDiariaCancelar(diaria)}
+                        >
                           Cancelado
                         </Button>
                       )}
@@ -142,7 +149,12 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
                   </TableCell>
                   <TableCell>
                     {podeCancelar(item) && (
-                      <Button color={'error'}>Cancelar</Button>
+                      <Button
+                        color={'error'}
+                        onClick={() => setDiariaCancelar(item)}
+                      >
+                        Cancelar
+                      </Button>
                     )}
                     {podeConfirmar(item) && (
                       <Button
@@ -188,6 +200,13 @@ const MinhasDiarias: React.FC<PropsWithChildren> = () => {
           diaria={diariaAvaliar}
           onConfirm={avaliarDiaria}
           onCancel={() => setDiariaAvaliar(undefined)}
+        />
+      )}
+      {diariaCancelar && (
+        <CancelDialog
+          diaria={diariaCancelar}
+          onConfirm={()=>{}}
+          onCancel={() => setDiariaCancelar(undefined)}
         />
       )}
     </Container>
