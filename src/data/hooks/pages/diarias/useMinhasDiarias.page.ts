@@ -2,8 +2,9 @@ import { DiariaInterface } from 'data/@Types/DiariaInterface';
 import { DiariaContext } from 'data/contexts/DiariaContext';
 import useIsMobile from 'data/hooks/useIsMobile';
 import usePagination from 'data/hooks/usePagination.hook';
-import { linksResolver } from 'data/services/ApiService';
-import { useContext } from 'react';
+import { ApiServiceHeteoas, linksResolver } from 'data/services/ApiService';
+import { useContext, useState } from 'react';
+import { mutate } from 'swr';
 
 export default function useMinhasDiarias() {
   const isMobile = useIsMobile(),
@@ -14,7 +15,8 @@ export default function useMinhasDiarias() {
     { currentPage, setCurrentPage, totalPage, itemsPerPage } = usePagination(
       diarias,
       5
-    );
+    ),
+    [diariaConfirmar, setDiariaConfirmar] = useState<DiariaInterface>()
 
   function podeVisualizar(diaria: DiariaInterface): boolean {
     return linksResolver(diaria.links, 'self') != undefined;
@@ -32,6 +34,22 @@ export default function useMinhasDiarias() {
     return linksResolver(diaria.links, 'avaliar_diaria') != undefined;
   }
 
+  async function confirmarDiaria(diaria: DiariaInterface) {
+    ApiServiceHeteoas(diaria.links, 'confirmar_diarista', async (request) => {
+      try {
+        await request();
+        setDiariaConfirmar(undefined);
+        atualizarDiarias();
+      } catch (error) {
+        
+      }
+    })
+  }
+
+  function atualizarDiarias() {
+    mutate('listar_diarias')
+  }
+
   return {
     isMobile,
     currentPage,
@@ -43,5 +61,8 @@ export default function useMinhasDiarias() {
     podeCancelar,
     podeConfirmar,
     podeAvaliar,
+    diariaConfirmar,
+    setDiariaConfirmar,
+    confirmarDiaria,
   };
 }
