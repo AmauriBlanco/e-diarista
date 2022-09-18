@@ -61,6 +61,23 @@ export default function useMinhasDiarias() {
     });
   }
 
+    async function cancelarDiaria(
+      diaria: DiariaInterface,
+      motivo: string
+    ) {
+      ApiServiceHeteoas(diaria.links, 'cancelar_diaria', async (request) => {
+        try {
+          await request({
+            data: {
+              motivo_cancelamento: motivo,
+            },
+          });
+          setDiariaCancelar(undefined);
+          atualizarDiarias();
+        } catch (error) {}
+      });
+    }
+
   function atualizarDiarias() {
     mutate('listar_diarias');
   }
@@ -84,5 +101,6 @@ export default function useMinhasDiarias() {
     avaliarDiaria,
     diariaCancelar,
     setDiariaCancelar,
+    cancelarDiaria,
   };
 }
