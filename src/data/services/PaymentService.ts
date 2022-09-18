@@ -1,3 +1,5 @@
+import { TextColor } from 'data/@Types/DiariaInterface';
+import { PagamentoStatus } from 'data/@Types/PagamentosInterface';
 import pagarme, { CardInterface, CardValidateInterface } from 'pagarme';
 
 const encryption_key = process.env.NEXT_PUBLIC_PAGARME_ENCRYPTION_KEY;
@@ -10,5 +12,20 @@ export const PaymentService = {
     return pagarme.client
       .connect({ encryption_key })
       .then((client) => client.security.encrypt(card));
+  },
+
+  getStatus(status: PagamentoStatus): { label: string; color: TextColor } {
+    let label = '',
+      color: TextColor = 'success';
+    switch (status) {
+      case PagamentoStatus.Aguardando_transferencia:
+        label = 'Aguardando Transferência';
+        color = 'warning';
+        break;
+      case PagamentoStatus.Pago:
+        label = 'Paga';
+        break;
+    }
+    return { label, color };
   },
 };

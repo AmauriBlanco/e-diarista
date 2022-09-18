@@ -4,7 +4,7 @@ import {
   CancelDialog,
   ConfirmDialog,
   RatingDialog,
-} from 'data/hooks/pages/diarias/_minhas-diarias-dialogs';
+} from 'ui/partials/diarias/_minhas-diarias-dialogs';
 import { DiariaService } from 'data/services/DiariaService';
 import { TextFormatService } from 'data/services/TextFormatService';
 import React, { PropsWithChildren } from 'react';
